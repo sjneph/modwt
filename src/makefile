@@ -7,7 +7,7 @@ LIB1	= $(MAIN)
 SOURCE1	= WaveletApp.cpp
 BIN	= ../bin
 
-NAME1	= wavelets
+NAME1	= modwt
 
 .cpp.o:; $(CC) -c $(SFLAGS) $<
 

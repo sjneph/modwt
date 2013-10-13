@@ -4,7 +4,7 @@
   CREATE DATE: Tue Oct  9 18:36:13 PDT 2007
 */
 
-//    The Maximal Overlap Discrete Wavelet Tranform (MODWT)
+//    The Maximal Overlap Discrete Wavelet Transform (MODWT)
 //    Copyright (C) 2007-2013 Shane Neph & Scott Kuehn
 //
 //    This program is free software; you can redistribute it and/or modify

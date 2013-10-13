@@ -4,7 +4,7 @@
   CREATE DATE: Tue Oct  9 18:36:13 PDT 2007
 */
 
-//    The Maximal Overlap Discrete Wavelet Tranform (MODWT)
+//    The Maximal Overlap Discrete Wavelet Transform (MODWT)
 //    Copyright (C) 2007-2013 Shane Neph & Scott Kuehn
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -114,7 +114,7 @@ namespace {
       { return(toStdout_); }
 
     static std::string Usage() {
-      std::string expect = "wavelets";
+      std::string expect = "modwt";
       expect += "\n\t[--boundary <string = periodic>]";
       expect += "\n\t[--filter <string = LA8>]";
       expect += "\n\t[--help (includes lots of info)]";
