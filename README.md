@@ -1,3 +1,6 @@
+## Scalable Maximal Overlap Discrete Wavelet Tranform (MODWT) ##
+> Shane Neph and Scott Kuehn
+
 
 Overview
 =========
