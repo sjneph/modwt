@@ -12,6 +12,5 @@ boost headers (http://www.boost.org/)
 
 Build
 ======
-cd src/  
-make  
-../bin/modwt --help  
+make -C src/  
+bin/modwt --help  
