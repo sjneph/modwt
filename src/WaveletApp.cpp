@@ -27,6 +27,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iterator>
+#include <list>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -44,54 +45,11 @@ namespace {
 
   struct Help { /* */ };
 
-
   //=======
   // Input : just manages user inputs to the application
   //=======
   struct Input {
-    Input(int argc, char** argv)
-         : file_("-"), fType_("LA8"), bType_("Periodic"),
-           op_(SMOOTH), maxLevel_(4), toStdout_(false), prefix_("") {
-
-      Ext::Assert<Ext::UserError>(argc >= 2, "Expect <file-name>");
-      if ( lc(argv[argc-1]) == "--help" )
-        throw(Help());
-
-      for ( int i = 1; i < argc - 1; ) {
-        std::string option = lc(argv[i++]);
-        std::string value = argv[i++];
-
-        if ( option == "--help" || value == "--help" )
-          throw(Help());
-
-        if ( option == "--boundary" )
-          bType_ = value;
-        else if ( option == "--filter" )
-          fType_ = value;
-        else if ( option == "--level" )
-          setLevel(value);
-        else if ( option == "--operation" )
-          setOperation(value);
-        else if ( option == "--prefix" )
-          prefix_ = value;
-        else if ( option == "--to-stdout" ) {
-          toStdout_ = true;          
-          --i; // a flag
-        }
-        else
-          throw(Ext::UserError("Unknown option", argv[i-2]));
-
-        Ext::Assert<Ext::UserError>(i != argc, "Wrong number of total arguments");
-      } // for
-
-      file_ = argv[argc-1];
-      bool problem = toStdout_ && op_ != SMOOTH && op_ != SCALE_COEFFS;
-      Ext::Assert<Ext::UserError>(!problem,
-                                  "--to-stdout not allowed for given --operation",
-                                  "see --help for details");
-      Ext::Assert<Ext::UserError>(!toStdout_ || prefix_.empty(),
-                                  "cannot --to-stdout and add --prefix value"); 
-    }
+    Input(int argc, char** argv);
 
     std::string BoundaryType() const
       { return(bType_); }
@@ -118,7 +76,7 @@ namespace {
       std::string expect = "modwt";
       expect += "\n\t[--boundary <string = periodic>]";
       expect += "\n\t[--filter <string = LA8>]";
-      expect += "\n\t[--help (includes lots of info)]";
+      expect += "\n\t[--help (includes option details)]";
       expect += "\n\t[--level <integer = 4>]";
       expect += "\n\t[--operation <string = smooth>]";
       expect += "\n\t[--prefix <string = ''>]";
@@ -147,82 +105,12 @@ namespace {
     }
 
   private:
-    std::string lc(const std::string& s) {
-      std::string cpy(s);
-      for ( std::string::size_type sz = 0; sz < s.size(); ++sz )
-        cpy[sz] = std::tolower(cpy[sz]);
-      return(cpy);
-    }
-
-    void setLevel(const std::string& s) {
-      static const std::string plusInts = "0123456789";
-      std::string::size_type sz = s.find_first_not_of(plusInts);
-      std::string::size_type npos = std::string::npos;
-      Ext::Assert<Ext::UserError>(sz == npos, "Not a +integer", s);
-      std::stringstream converter(s);
-      converter >> maxLevel_;
-      Ext::Assert<Ext::UserError>(maxLevel_ > 0, "Not a +integer", s);
-    }
-
-    void setOperation(const std::string& s) {
-      std::string op = lc(s);
-      if ( op == "wave" )
-        op_ = WAVE_COEFFS;
-      else if ( op == "scale" )
-        op_ = SCALE_COEFFS;
-      else if ( op == "wave-scale" )
-        op_ = WAVE_SCALE_COEFFS;
-      else if ( op == "smooth" )
-        op_ = SMOOTH;
-      else if ( op == "details" )
-        op_ = DETAILS;
-      else if ( op == "mra" )
-        op_ = MRA;
-      else if ( op == "all" )
-        op_ = ALL;
-      else
-        throw(Ext::UserError("Unknown --operation: " + s, allowedOps()));
-    }
-
-    static std::string allowedOps() {
-      std::string val = "\n\tAllowed --operation list:\n";
-      val += "\t\tall\n";
-      val += "\t\tdetails\n";
-      val += "\t\tmra\n";
-      val += "\t\tscale\n";
-      val += "\t\tsmooth\n";
-      val += "\t\twave\n";
-      val += "\t\twave-scale\n";
-      return(val);
-    }
-
-    static std::string allowedFilters() {
-      std::list< std::string > allFilts = WT::Filter::allFTypesStrings();
-      std::string val = "\n\tAllowed --filter list:\n";
-      std::list< std::string >::const_iterator i = allFilts.begin();
-      const int maxPerLine = 10;
-      int cnt = 0;
-      while ( i != allFilts.end() ) {
-        if ( ++cnt == 1 ) {
-          val += "\t\t" + *i++;
-        } else if ( cnt == maxPerLine ) {
-          val += ", " + *i++ + "\n";
-          cnt = 0;
-        } else {
-          val += ", " + *i++;
-        }
-      } // while
-      return(val);
-    }
-
-    static std::string allowedBoundaries() {
-      std::list< std::string > allBoundaries = WT::allBoundaryStrings();
-      std::string val = "\n\tAllowed --boundary list:\n";
-      std::list< std::string >::const_iterator i = allBoundaries.begin();
-      while ( i != allBoundaries.end() )
-        val += "\t\t" + *i++ + "\n";
-      return(val);
-    }
+    std::string lc(const std::string& s);
+    void setLevel(const std::string& s);
+    void setOperation(const std::string& s);
+    static std::string allowedOps();
+    static std::string allowedFilters();
+    static std::string allowedBoundaries();
 
   private:
     std::string file_, fType_, bType_;
@@ -372,6 +260,130 @@ namespace {
       default: // ALL
         WT::doAll(x, maxLevel, filterType, wop1, dop1, vop1, sop1);
     };
+  }
+
+  //===========================================
+  // Boring user input related implementations
+  //===========================================
+  Input::Input(int argc, char** argv)
+         : file_("-"), fType_("LA8"), bType_("Periodic"),
+           op_(SMOOTH), maxLevel_(4), toStdout_(false), prefix_("") {
+
+    Ext::Assert<Ext::UserError>(argc >= 2, "Expect <file-name>");
+    if ( lc(argv[argc-1]) == "--help" )
+      throw(Help());
+
+    for ( int i = 1; i < argc - 1; ) {
+      std::string option = lc(argv[i++]);
+      std::string value = argv[i++];
+
+      if ( option == "--help" || value == "--help" )
+        throw(Help());
+
+      if ( option == "--boundary" )
+        bType_ = value;
+      else if ( option == "--filter" )
+        fType_ = value;
+      else if ( option == "--level" )
+        setLevel(value);
+      else if ( option == "--operation" )
+        setOperation(value);
+      else if ( option == "--prefix" )
+        prefix_ = value;
+      else if ( option == "--to-stdout" ) {
+        toStdout_ = true;          
+        --i; // a flag
+      }
+      else
+        throw(Ext::UserError("Unknown option", argv[i-2]));
+
+      Ext::Assert<Ext::UserError>(i != argc, "Wrong number of total arguments");
+    } // for
+
+    file_ = argv[argc-1];
+    bool problem = toStdout_ && op_ != SMOOTH && op_ != SCALE_COEFFS;
+    Ext::Assert<Ext::UserError>(!problem,
+                                "--to-stdout not allowed for given --operation",
+                                "see --help for details");
+    Ext::Assert<Ext::UserError>(!toStdout_ || prefix_.empty(),
+                                "cannot --to-stdout and add --prefix value"); 
+  }
+
+  std::string Input::lc(const std::string& s) {
+    std::string cpy(s);
+    for ( std::string::size_type sz = 0; sz < s.size(); ++sz )
+      cpy[sz] = std::tolower(cpy[sz]);
+    return(cpy);
+  }
+
+  void Input::setLevel(const std::string& s) {
+    static const std::string plusInts = "0123456789";
+    std::string::size_type sz = s.find_first_not_of(plusInts);
+    std::string::size_type npos = std::string::npos;
+    Ext::Assert<Ext::UserError>(sz == npos, "Not a +integer", s);
+    std::stringstream converter(s);
+    converter >> maxLevel_;
+    Ext::Assert<Ext::UserError>(maxLevel_ > 0, "Not a +integer", s);
+  }
+
+  void Input::setOperation(const std::string& s) {
+    std::string op = lc(s);
+    if ( op == "wave" )
+      op_ = WAVE_COEFFS;
+    else if ( op == "scale" )
+      op_ = SCALE_COEFFS;
+    else if ( op == "wave-scale" )
+      op_ = WAVE_SCALE_COEFFS;
+    else if ( op == "smooth" )
+      op_ = SMOOTH;
+    else if ( op == "details" )
+      op_ = DETAILS;
+    else if ( op == "mra" )
+      op_ = MRA;
+    else if ( op == "all" )
+      op_ = ALL;
+    else
+      throw(Ext::UserError("Unknown --operation: " + s, allowedOps()));
+  }
+
+  std::string Input::allowedOps() {
+    std::string val = "\n\tAllowed --operation list:\n";
+    val += "\t\tall\n";
+    val += "\t\tdetails\n";
+    val += "\t\tmra\n";
+    val += "\t\tscale\n";
+    val += "\t\tsmooth\n";
+    val += "\t\twave\n";
+    val += "\t\twave-scale\n";
+    return(val);
+  }
+
+  std::string Input::allowedFilters() {
+    std::list< std::string > allFilts = WT::Filter::allFTypesStrings();
+    std::string val = "\n\tAllowed --filter list:\n";
+    std::list< std::string >::const_iterator i = allFilts.begin();
+    const int maxPerLine = 10;
+    int cnt = 0;
+    while ( i != allFilts.end() ) {
+      if ( ++cnt == 1 ) {
+        val += "\t\t" + *i++;
+      } else if ( cnt == maxPerLine ) {
+        val += ", " + *i++ + "\n";
+        cnt = 0;
+      } else {
+        val += ", " + *i++;
+      }
+    } // while
+    return(val);
+  }
+
+  std::string Input::allowedBoundaries() {
+    std::list< std::string > allBoundaries = WT::allBoundaryStrings();
+    std::string val = "\n\tAllowed --boundary list:\n";
+    std::list< std::string >::const_iterator i = allBoundaries.begin();
+    while ( i != allBoundaries.end() )
+      val += "\t\t" + *i++ + "\n";
+    return(val);
   }
 
 } // unnamed
