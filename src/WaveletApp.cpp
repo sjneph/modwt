@@ -72,37 +72,9 @@ namespace {
     bool StdOut() const
       { return(toStdout_); }
 
-    static std::string Usage() {
-      std::string expect = "modwt";
-      expect += "\n\t[--boundary <string = periodic>]";
-      expect += "\n\t[--filter <string = LA8>]";
-      expect += "\n\t[--help (includes option details)]";
-      expect += "\n\t[--level <integer = 4>]";
-      expect += "\n\t[--operation <string = smooth>]";
-      expect += "\n\t[--prefix <string = ''>]";
-      expect += "\n\t[--to-stdout]";
-      expect += "\n\t<file-name>";
-      expect += "\n";
-      return(expect);
-    }
+    static std::string Usage();
 
-    static std::string VerboseUsage() {
-      std::string verbose = Usage();
-      verbose += "\n";
-      verbose += "\n\t--level is the max level to compute to\n";
-      verbose += "\n\t--prefix is added to front of each output file name\n";
-      verbose += "\n\t--to-stdout is applicable to --operation = scale|smooth";
-      verbose += "\n";
-      verbose += allowedOps();
-      verbose += "\n";
-      verbose += allowedFilters();
-      verbose += "\n";
-      verbose += allowedBoundaries();
-      verbose += "\n";
-      verbose += "\n\t<file-name> may be '-' to indicate reading from stdin";
-      verbose += "\n";
-      return(verbose);
-    }
+    static std::string VerboseUsage();
 
   private:
     std::string lc(const std::string& s);
@@ -384,6 +356,38 @@ namespace {
     while ( i != allBoundaries.end() )
       val += "\t\t" + *i++ + "\n";
     return(val);
+  }
+
+  std::string Input::Usage() {
+    std::string expect = "modwt";
+    expect += "\n\t[--boundary <string = periodic>]";
+    expect += "\n\t[--filter <string = LA8>]";
+    expect += "\n\t[--help (includes option details)]";
+    expect += "\n\t[--level <integer = 4>]";
+    expect += "\n\t[--operation <string = smooth>]";
+    expect += "\n\t[--prefix <string = ''>]";
+    expect += "\n\t[--to-stdout]";
+    expect += "\n\t<file-name>";
+    expect += "\n";
+    return(expect);
+  }
+
+  std::string Input::VerboseUsage() {
+    std::string verbose = Usage();
+    verbose += "\n";
+    verbose += "\n\t--level is the max level to compute to\n";
+    verbose += "\n\t--prefix is added to front of each output file name\n";
+    verbose += "\n\t--to-stdout is applicable to --operation = scale|smooth";
+    verbose += "\n";
+    verbose += allowedOps();
+    verbose += "\n";
+    verbose += allowedFilters();
+    verbose += "\n";
+    verbose += allowedBoundaries();
+    verbose += "\n";
+    verbose += "\n\t<file-name> may be '-' to indicate reading from stdin";
+    verbose += "\n";
+    return(verbose);
   }
 
 } // unnamed
