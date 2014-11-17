@@ -20,4 +20,4 @@ bin/modwt --help
 Documentation  
 ==============  
 doc/ has an html document to open in your browser  
-bin/modwt --help has all options  
+bin/modwt --help includes all option arguments  
