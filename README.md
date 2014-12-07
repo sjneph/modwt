@@ -19,7 +19,7 @@ bin/modwt --help
 
 Documentation  
 ==============  
-doc/ has an html document to open in your browser (same information as shown below) 
+doc/ has an html document to open in your browser (same information as shown below)  
 bin/modwt --help includes all option arguments  
 
 
