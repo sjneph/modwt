@@ -19,8 +19,9 @@ bin/modwt --help
 
 Documentation  
 ==============  
-doc/ has an html document to open in your browser  
+doc/ has an html document to open in your browser (same information as shown below) 
 bin/modwt --help includes all option arguments  
+
 
 <p>The Maximal Overlap Discrete Wavelet Transform (MODWT) library is written to be as efficient in RAM and time requirements as possible with particular emphasis on RAM.  The application utilizes the library in the most efficient way allowing us to scale to the whole genome level.
 </p>
