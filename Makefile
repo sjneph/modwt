@@ -1,10 +1,10 @@
-MAIN	= ../include
+MAIN	= include
 CC	= g++
 SFLAGS	= -static -ansi -Wall -pedantic -O3 -I$(MAIN)
-OBJDIR	= objects
+OBJDIR	= src/objects
 
 LIB1	= $(MAIN)
-SOURCE1	= WaveletApp.cpp
+SOURCE1	= src/WaveletApp.cpp
 BIN	= ../bin
 
 NAME1	= modwt
