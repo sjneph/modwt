@@ -5,7 +5,7 @@ OBJDIR	= src/objects
 
 LIB1	= $(MAIN)
 SOURCE1	= src/WaveletApp.cpp
-BIN	= ../bin
+BIN	= bin
 
 NAME1	= modwt
 
