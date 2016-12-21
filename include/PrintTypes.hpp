@@ -1,11 +1,10 @@
 /*
-  FILE: PrintTypes.hpp
-  AUTHOR: Shane Neph & Scott Kuehn
-  CREATE DATE: Tue Oct  9 18:36:13 PDT 2007
+  Author: Shane Neph & Scott Kuehn
+  Date:   Wed Sep  5 11:16:29 PDT 2007
 */
-
-//    The Maximal Overlap Discrete Wavelet Transform (MODWT)
-//    Copyright (C) 2007-2013 Shane Neph & Scott Kuehn
+//
+//    BEDOPS
+//    Copyright (C) 2011-2016 Shane Neph, Scott Kuehn and Alex Reynolds
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -22,13 +21,14 @@
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 
-
 #ifndef SIMPLE_PRINT_FORMATS_H
 #define SIMPLE_PRINT_FORMATS_H
 
-#include <boost/type_traits.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <cstdio>
+#include <string>
+#include <type_traits>
 
+#include "Formats.hpp"
 
 namespace PrintTypes {
 
@@ -36,56 +36,81 @@ namespace PrintTypes {
     template <typename T>
     struct check {
       static const bool value = 
-              boost::is_arithmetic<T>::value ||
-              boost::is_same< typename boost::remove_const<T>::type, char* >::value ||
-              boost::is_same< typename boost::remove_const<T>::type, char const* >::value;
+              std::is_arithmetic<T>::value ||
+              std::is_same<typename std::remove_cv<T>::type, char*>::value ||
+              std::is_same<typename std::remove_cv<T>::type, char const*>::value;
     };
   }
 
   template <typename T>
-  extern typename boost::enable_if< Details::check<T>, void >::type
-  Print(T);
+  extern typename std::enable_if<Details::check<T>::value>::type
+  Print(T t) {
+    static std::string f = Formats::Format(t);
+    static char const* format = f.c_str();
+    std::printf(format, t);
+  }
 
   template <typename T>
-  extern typename boost::enable_if< Details::check<T>, void >::type
-  Println(T);
+  extern typename std::enable_if<Details::check<T>::value>::type
+  Println(T t) {
+    static std::string end = Formats::Format(t) + std::string("\n");
+    static char const* format = end.c_str();
+    std::printf(format, t);
+  }
 
   template <typename T>
-  extern typename boost::enable_if< boost::is_arithmetic<T>, void >::type
-  Print(T, int, bool);
+  extern typename std::enable_if<std::is_arithmetic<T>::value>::type
+  Print(T t, int precision, bool scientific) {
+    std::string f = Formats::Format(t, precision, scientific);
+    char const* format = f.c_str();
+    std::printf(format, t);
+  }
 
   template <typename T>
-  extern typename boost::enable_if< boost::is_arithmetic<T>, void >::type
-  Println(T, int, bool);
+  extern typename std::enable_if<std::is_arithmetic<T>::value>::type
+  Println(T t, int precision, bool scientific) {
+    std::string end = Formats::Format(t, precision, scientific) + std::string("\n");
+    char const* format = end.c_str();
+    std::printf(format, t);
+  }
 
   template <typename T>
-  extern typename boost::enable_if< Details::check<T>, void >::type
-  Print(FILE* out, T t);
+  extern typename std::enable_if<Details::check<T>::value>::type
+  Print(FILE* out, T t) {
+    static std::string f = Formats::Format(t);
+    static char const* format = f.c_str();
+    std::fprintf(out, format, t);
+  }
 
   template <typename T>
-  extern typename boost::enable_if< Details::check<T>, void >::type
-  Println(FILE* out, T t);
-
+  extern typename std::enable_if<Details::check<T>::value>::type
+  Println(FILE* out, T t) {
+    static std::string end = Formats::Format(t) + std::string("\n");
+    static char const* format = end.c_str();
+    std::fprintf(out, format, t);
+  }
 
 
   template <typename T>
-  extern typename boost::disable_if< Details::check<T>, void >::type
-  Print(const T& t);
+  extern typename std::enable_if<!Details::check<T>::value>::type
+  Print(const T& t)
+    { t.print(); }
 
   template <typename T>
-  extern typename boost::disable_if< Details::check<T>, void >::type
-  Println(const T& t);
+  extern typename std::enable_if<!Details::check<T>::value>::type
+  Println(const T& t)
+    { t.println(); }
 
   template <typename T>
-  extern typename boost::disable_if< Details::check<T>, void >::type
-  Print(FILE* out, const T& t);
+  extern typename std::enable_if<!Details::check<T>::value>::type
+  Print(FILE* out, const T& t)
+    { t.print(out); }
 
   template <typename T>
-  extern typename boost::disable_if< Details::check<T>, void >::type
-  Println(FILE* out, const T& t);
+  extern typename std::enable_if<!Details::check<T>::value>::type
+  Println(FILE* out, const T& t)
+    { t.println(out); }
 
 } // namespace PrintTypes
-
-#include "PrintTypes.cpp"
 
 #endif // SIMPLE_PRINT_FORMATS_H

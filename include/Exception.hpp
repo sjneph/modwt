@@ -42,7 +42,7 @@ namespace Ext
     virtual ~Exception() throw() { /* */ }
     virtual const char* what() const throw() { return msg_.c_str(); }
   protected:
-    Exception() { } // Hack.  look at traits in boost
+    Exception() { } // Hack.  look to use traits
     std::string msg_;
   };
 
