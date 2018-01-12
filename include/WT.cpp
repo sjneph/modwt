@@ -372,7 +372,7 @@ namespace WT {
 
     // The main trick here is to switch between the wavefilt and scalefilt depending on whether you
     //  are at the scale of current interest or less.
-    typename ContWaveletCoefficients::iterator Wjt = Wj.begin(), end = Wj.end(), alwaysBeg = Wj.begin();
+    typename ContWaveletCoefficients::iterator Wjt = Wj.begin(), end = Wj.end();
     int sz = 0;
     while ( Wjt != end ) {
       Details::details_one(*Wjt, Wit, wavefilt, scalefilt, sz, dops[sz]);
