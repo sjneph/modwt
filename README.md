@@ -38,7 +38,7 @@ bin/modwt --help includes all option arguments
 <a name="General_Usage"></a><h3>General Usage</h3>
 
 <p><b>NOTE</b>  <code>modwt --help</code> shows a lot of useful information.  It includes all available filters, boundary conditions and more.
-</p><p><code>
+</p><p>
 modwt<br />
 [--boundary &lt;string = periodic&gt;]<br />
 [--filter &lt;string = LA8&gt;]<br />
@@ -49,7 +49,6 @@ modwt<br />
 [--prefix &lt;string = ""&gt;]<br />
 [--to-stdout]<br />
 &lt;file-name&gt;<br />
-</code>
 
 </p><p><b>Where</b>
 </p>
