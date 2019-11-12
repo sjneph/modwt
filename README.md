@@ -43,7 +43,6 @@ modwt<br />
 [--boundary &lt;string = periodic&gt;]<br />
 [--filter &lt;string = LA8&gt;]<br />
 [--help]<br />
-
 [--level &lt;integer = 4&gt;]<br />
 [--operation &lt;string = smooth&gt;]<br />
 [--prefix &lt;string = ""&gt;]<br />
